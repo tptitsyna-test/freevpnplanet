@@ -25,51 +25,51 @@ export class PersonalVpnEnPage {
   private readonly emailInput: Locator;
   private readonly firstStepPayButton: Locator;
   private readonly finalPayButton: Locator;
-  private readonly personalForm: Locator;
-  private readonly paymentForm: Locator;
+  private readonly subscriptionForm: Locator;
+  private readonly paymentMethodForm: Locator;
   private readonly planOptions: Record<PersonalPlan, Locator>;
-  private readonly planInputs: Record<PersonalPlan, Locator>;
-  private readonly defaultLocationInput: Locator;
-  private readonly defaultCurrencyInput: Locator;
-  private readonly defaultPlanInput: Locator;
-  private readonly gatewayOptions: Record<PaymentGateway, Locator>;
-  private readonly gatewayInputs: Record<PaymentGateway, Locator>;
-  private readonly termsInput: Locator;
+  private readonly planRadios: Record<PersonalPlan, Locator>;
+  private readonly defaultLocationRadio: Locator;
+  private readonly defaultCurrencyRadio: Locator;
+  private readonly defaultPlanRadio: Locator;
+  private readonly gatewayOptionLabels: Record<PaymentGateway, Locator>;
+  private readonly gatewayRadios: Record<PaymentGateway, Locator>;
+  private readonly termsCheckbox: Locator;
   private readonly termsOption: Locator;
   private readonly termsLink: Locator;
   private readonly refundPolicyLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.personalForm = page.locator('#PPG');
-    this.paymentForm = page.locator('form[name="PPG"]');
+    this.subscriptionForm = page.locator('#PPG');
+    this.paymentMethodForm = page.locator('form[name="PPG"]');
     this.heroHeading = page.getByRole('heading', { name: /your personal vpn/i });
-    this.emailInput = this.personalForm.getByPlaceholder('name@example.com');
-    this.firstStepPayButton = this.personalForm.locator('button[type="submit"]');
-    this.finalPayButton = this.paymentForm.locator('button[type="submit"]');
+    this.emailInput = this.subscriptionForm.getByPlaceholder('name@example.com');
+    this.firstStepPayButton = this.subscriptionForm.getByRole('button').filter({ hasText: /^pay$/i });
+    this.finalPayButton = this.paymentMethodForm.getByRole('button').filter({ hasText: /^pay$/i });
     this.planOptions = {
-      '1_month': this.personalForm.locator('label.radio', { hasText: planLabels['1_month'] }),
-      '1_year': this.personalForm.locator('label.radio', { hasText: planLabels['1_year'] }),
+      '1_month': this.subscriptionForm.locator('label.radio', { hasText: planLabels['1_month'] }),
+      '1_year': this.subscriptionForm.locator('label.radio', { hasText: planLabels['1_year'] }),
     };
-    this.planInputs = {
-      '1_month': this.personalForm.locator('input[name="offer_id"][value="1_month"]'),
-      '1_year': this.personalForm.locator('input[name="offer_id"][value="1_year"]'),
+    this.planRadios = {
+      '1_month': this.subscriptionForm.getByRole('radio', { name: /1 month/i }),
+      '1_year': this.subscriptionForm.getByRole('radio', { name: /1 year/i }),
     };
-    this.defaultLocationInput = this.personalForm.locator('input[name="location"][value="NL"]');
-    this.defaultCurrencyInput = this.personalForm.locator('input[name="currency_code"][value="USD"]');
-    this.defaultPlanInput = this.personalForm.locator('input[name="offer_id"][value="2_days"]');
-    this.gatewayOptions = {
-      stripe: this.paymentForm.locator('label', { hasText: gatewayLabels.stripe }),
-      crypto: this.paymentForm.locator('label', { hasText: gatewayLabels.crypto }),
+    this.defaultLocationRadio = this.subscriptionForm.getByRole('radio', { name: /netherlands/i });
+    this.defaultCurrencyRadio = this.subscriptionForm.getByRole('radio', { name: /^usd$/i });
+    this.defaultPlanRadio = this.subscriptionForm.getByRole('radio', { name: /^2 days/i });
+    this.gatewayOptionLabels = {
+      stripe: this.paymentMethodForm.locator('label', { hasText: gatewayLabels.stripe }),
+      crypto: this.paymentMethodForm.locator('label', { hasText: gatewayLabels.crypto }),
     };
-    this.gatewayInputs = {
-      stripe: this.paymentForm.locator('input[name="gateway"][value="stripe"]'),
-      crypto: this.paymentForm.locator('input[name="gateway"][value="crypto"]'),
+    this.gatewayRadios = {
+      stripe: this.paymentMethodForm.getByRole('radio', { name: /credit card/i }),
+      crypto: this.paymentMethodForm.getByRole('radio', { name: /cryptocurrency/i }),
     };
-    this.termsInput = this.paymentForm.locator('input[name="terms"]');
-    this.termsOption = this.paymentForm.locator('label', { hasText: /by clicking this button/i });
-    this.termsLink = this.paymentForm.locator('a', { hasText: /terms of use/i });
-    this.refundPolicyLink = this.paymentForm.locator('a', { hasText: /refund policy/i });
+    this.termsCheckbox = this.paymentMethodForm.getByRole('checkbox', { name: /by clicking this button/i });
+    this.termsOption = this.paymentMethodForm.locator('label', { hasText: /by clicking this button/i });
+    this.termsLink = this.paymentMethodForm.getByRole('link', { name: /terms of use/i });
+    this.refundPolicyLink = this.paymentMethodForm.getByRole('link', { name: /refund policy/i });
   }
 
   async goto() {
@@ -80,11 +80,11 @@ export class PersonalVpnEnPage {
 
   async expectDefaultOptionsVisible() {
     await expect(this.page.getByText(/choose the server location/i)).toBeVisible();
-    await expect(this.defaultLocationInput).toBeChecked();
+    await expect(this.defaultLocationRadio).toBeChecked();
     await expect(this.page.getByText(/choose a currency/i)).toBeVisible();
-    await expect(this.defaultCurrencyInput).toBeChecked();
+    await expect(this.defaultCurrencyRadio).toBeChecked();
     await expect(this.page.getByText(/choose the plan/i)).toBeVisible();
-    await expect(this.defaultPlanInput).toBeChecked();
+    await expect(this.defaultPlanRadio).toBeChecked();
     await expect(this.planOptions['1_month']).toBeVisible();
     await expect(this.planOptions['1_year']).toBeVisible();
     await expect(this.emailInput).toBeVisible();
@@ -93,7 +93,7 @@ export class PersonalVpnEnPage {
 
   async selectPlan(plan: PersonalPlan) {
     await this.planOptions[plan].click();
-    await expect(this.planInputs[plan]).toBeChecked();
+    await expect(this.planRadios[plan]).toBeChecked();
   }
 
   async fillEmail(email: string) {
@@ -102,8 +102,8 @@ export class PersonalVpnEnPage {
   }
 
   async expectDefaultLocationAndCurrencySelected() {
-    await expect(this.defaultLocationInput).toBeChecked();
-    await expect(this.defaultCurrencyInput).toBeChecked();
+    await expect(this.defaultLocationRadio).toBeChecked();
+    await expect(this.defaultCurrencyRadio).toBeChecked();
   }
 
   async continueToPaymentMethods(plan: PersonalPlan, email: string) {
@@ -125,21 +125,21 @@ export class PersonalVpnEnPage {
   }
 
   async expectPaymentMethodsVisible() {
-    await expect(this.gatewayOptions.stripe).toBeVisible();
-    await expect(this.gatewayOptions.crypto).toBeVisible();
-    await expect(this.gatewayInputs.stripe).toBeChecked();
-    await expect(this.gatewayInputs.crypto).not.toBeChecked();
+    await expect(this.gatewayOptionLabels.stripe).toBeVisible();
+    await expect(this.gatewayOptionLabels.crypto).toBeVisible();
+    await expect(this.gatewayRadios.stripe).toBeChecked();
+    await expect(this.gatewayRadios.crypto).not.toBeChecked();
     await expect(this.finalPayButton).toBeVisible();
   }
 
   async selectGateway(gateway: PaymentGateway) {
-    await this.gatewayOptions[gateway].click();
-    await expect(this.gatewayInputs[gateway]).toBeChecked();
+    await this.gatewayOptionLabels[gateway].click();
+    await expect(this.gatewayRadios[gateway]).toBeChecked();
   }
 
   async expectTermsControlsVisible() {
     await expect(this.termsOption).toBeVisible();
-    await expect(this.termsInput).not.toBeChecked();
+    await expect(this.termsCheckbox).not.toBeChecked();
     await expect(this.termsLink).toHaveAttribute('href', /\/terms\/?$/);
     await expect(this.refundPolicyLink).toHaveAttribute('href', /\/refund\/?$/);
     await expect(this.finalPayButton).toBeEnabled();
@@ -147,7 +147,7 @@ export class PersonalVpnEnPage {
 
   async acceptTerms() {
     await this.termsOption.click();
-    await expect(this.termsInput).toBeChecked();
+    await expect(this.termsCheckbox).toBeChecked();
   }
 
   async submitFinalPayment() {
