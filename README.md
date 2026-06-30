@@ -55,16 +55,14 @@ Playwright e2e tests
 ## Рекомендации
 
 - Добавить тестовые/sandbox payment endpoints или test mode, чтобы можно было безопасно проверять генерацию payment URL без production side effects.
-- Продолжать использовать `data-test-id` в checkout и добавить такие же стабильные атрибуты для Personal VPN формы.
+- Добавить `data-test-id` для Personal VPN формы.
 - Personal VPN EN: добавить доступные имена или `data-test-id` для формы `#PPG`, чтобы не привязываться к CSS id.
 - Personal VPN EN: добавить `data-test-id` для карточек планов `2 days`, `1 month`, `1 year`; сейчас выбор кликается по `label.radio` с текстом.
-- Personal VPN EN: добавить явный label для email input, например `Your mail`, связанный через `for/id`; сейчас надежнее использовать placeholder `name@example.com`.
+- Personal VPN EN: добавить явный label для email input, например `Your mail`, связанный через `for/id`
 - Personal VPN EN payment page: добавить `data-test-id` или нормальные accessible labels для payment method карточек `Credit Card` и `Cryptocurrency`.
 - Personal VPN EN payment page: добавить доступный checkbox label для terms agreement, связанный с hidden checkbox; сейчас приходится кликать кастомный `label` по тексту.
-- Personal VPN EN payment page: добавить `data-test-id` для final `Pay` button и для hidden state inputs `gateway`, `offer_id`, `currency_code`, `location`, если их значения являются частью бизнес-проверок.
-- Personal VPN EN: технические CSS-локаторы из теста вынесены в `tests/pages/personal-vpn-en.page.ts`, чтобы spec оставался на уровне пользовательского сценария.
-- Account checkout: технические локаторы и чтение summary total вынесены в `tests/pages/account-checkout.page.ts`; тесты больше не хардкодят сумму платежа.
-- Account checkout: `data-test-id` уже есть и хорошо помогает. Можно дополнительно добавить semantic selected state (`aria-pressed` или `aria-checked`) для payment method buttons вместо проверки CSS class `payment-method--active`.
+- Personal VPN EN payment page: добавить `data-test-id` для final `Pay` button и для hidden state inputs `gateway`, `offer_id`, `currency_code`, `location`, если их значения являются частью бизнес-проверок
+- Account checkout: добавить semantic selected state (`aria-pressed` или `aria-checked`) для payment method buttons вместо проверки CSS class `payment-method--active`.
 - Account checkout: cookie accept button иногда видим, но перекрывается layout; стоит поправить z-index/position или скрывать popup корректно после acceptance.
 
 
@@ -74,7 +72,7 @@ Playwright e2e tests
 npm install
 npx playwright install chromium webkit
 ```
-
+    
 ## Run
 
 ```bash
